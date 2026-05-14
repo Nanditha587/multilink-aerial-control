@@ -1,9 +1,9 @@
 import numpy as np
 
 
-class DragonAerialModel:
+class Aerial_robotAerialModel:
     """
-    Simplified 2D Aerial Model for Three-Link DRAGON-like Robot
+    Simplified 2D Aerial Model for Three-Link AERIAL_ROBOT-like Robot
     ============================================================
     Based on Zhao et al. 2018/2022 with gimbal vectoring included.
 
@@ -134,15 +134,15 @@ class DragonAerialModel:
 
 
 if __name__ == "__main__":
-    dragon = DragonAerialModel()
+    aerial_robot = Aerial_robotAerialModel()
 
     # Check hover
-    u0     = dragon.hover_control()
+    u0     = aerial_robot.hover_control()
     state0 = np.zeros(10)
-    dstate = dragon.derivatives(0, state0, u0)
+    dstate = aerial_robot.derivatives(0, state0, u0)
     print("Derivatives at hover (should be zero):", np.round(dstate, 6))
 
-    A, B = dragon.linearize()
+    A, B = aerial_robot.linearize()
     print("\nA matrix:\n", np.round(A, 4))
     print("\nB matrix:\n", np.round(B, 4))
 

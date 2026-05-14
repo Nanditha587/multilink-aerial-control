@@ -159,12 +159,12 @@ def plot_comparison(t_lqr, X_lqr, U_lqr,
         print("Saved: plots/lqr_vs_mpc_comparison.png")
     plt.show()
 
-def plot_dragon_comparison(t_lqr, X_lqr, U_lqr,
+def plot_aerial_robot_comparison(t_lqr, X_lqr, U_lqr,
                             t_mpc, X_mpc, U_mpc,
                             change_time=5.0, save=True):
-    """Plot LQR vs MPC on DRAGON aerial model."""
+    """Plot LQR vs MPC on AERIAL_ROBOT aerial model."""
     fig, axes = plt.subplots(3, 2, figsize=(14, 12))
-    fig.suptitle('DRAGON Aerial Model — LQR vs MPC\nMorphology Change at t=5s',
+    fig.suptitle('AERIAL_ROBOT Aerial Model — LQR vs MPC\nMorphology Change at t=5s',
                  fontsize=14, fontweight='bold')
 
     controllers = [('LQR', t_lqr, X_lqr, U_lqr, '#2563EB'),
@@ -210,14 +210,14 @@ def plot_dragon_comparison(t_lqr, X_lqr, U_lqr,
 
     plt.tight_layout()
     if save:
-        plt.savefig('plots/dragon_lqr_vs_mpc.png', dpi=150, bbox_inches='tight')
-        print("Saved: plots/dragon_lqr_vs_mpc.png")
+        plt.savefig('plots/aerial_robot_lqr_vs_mpc.png', dpi=150, bbox_inches='tight')
+        print("Saved: plots/aerial_robot_lqr_vs_mpc.png")
     plt.show()    
 
 if __name__ == "__main__":
     from src.simulate import simulate_lqr
     from src.simulate_comparison import simulate_with_morphology_change
-    from src.simulate_dragon import simulate_dragon_morphology
+    from src.simulate_aerial_robot import simulate_aerial_robot_morphology
 
     x0 = np.array([0.2, -0.15, 0.1, 0.0, 0.0, 0.0])
 
@@ -236,8 +236,8 @@ if __name__ == "__main__":
         m_after=[3,0.5,2], l_after=[1.5,0.5,1.5])
     plot_comparison(t_lqr, X_lqr, U_lqr, t_mpc, X_mpc, U_mpc)
 
-    # Dragon aerial comparison
-    t_lqr_d, X_lqr_d, U_lqr_d = simulate_dragon_morphology(controller='lqr')
-    t_mpc_d, X_mpc_d, U_mpc_d = simulate_dragon_morphology(controller='mpc')
-    plot_dragon_comparison(t_lqr_d, X_lqr_d, U_lqr_d,
+    # Aerial_robot aerial comparison
+    t_lqr_d, X_lqr_d, U_lqr_d = simulate_aerial_robot_morphology(controller='lqr')
+    t_mpc_d, X_mpc_d, U_mpc_d = simulate_aerial_robot_morphology(controller='mpc')
+    plot_aerial_robot_comparison(t_lqr_d, X_lqr_d, U_lqr_d,
                            t_mpc_d, X_mpc_d, U_mpc_d)

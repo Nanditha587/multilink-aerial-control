@@ -2,16 +2,16 @@ import numpy as np
 from scipy.integrate import solve_ivp
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.dragon_dynamics import DragonAerialModel
+from src.aerial_robot_dynamics import Aerial_robotAerialModel
 from src.lqr_controller import LQRController
 from src.mpc_controller import MPCController
 
 
-def simulate_dragon_lqr(t_span=(0,10), dt=0.01, x0=None,
+def simulate_aerial_robot_lqr(t_span=(0,10), dt=0.01, x0=None,
                          m=[1,1,1], l=[1,1,1]):
-    """Simulate DRAGON aerial model under LQR control."""
-    dragon = DragonAerialModel(m=m, l=l)
-    A, B   = dragon.linearize()
+    """Simulate AERIAL_ROBOT aerial model under LQR control."""
+    aerial_robot = Aerial_robotAerialModel(m=m, l=l)
+    A, B   = aerial_robot.linearize()
 
     Q = np.diag([1.0, 10.0, 10.0, 10.0, 10.0,
                  0.1,  1.0,  1.0,  1.0,  1.0])
@@ -28,7 +28,7 @@ def simulate_dragon_lqr(t_span=(0,10), dt=0.01, x0=None,
     U = np.zeros((len(t_eval), 6))
     X[0] = x0
 
-    u_hover = dragon.hover_control()
+    u_hover = aerial_robot.hover_control()
 
     for i in range(len(t_eval) - 1):
         delta_u = lqr.compute_torque(X[i])
@@ -36,7 +36,7 @@ def simulate_dragon_lqr(t_span=(0,10), dt=0.01, x0=None,
         U[i]    = delta_u
 
         sol = solve_ivp(
-            fun=lambda t, x: dragon.derivatives(t, x, u_total),
+            fun=lambda t, x: aerial_robot.derivatives(t, x, u_total),
             t_span=(t_eval[i], t_eval[i+1]),
             y0=X[i], method='RK45', max_step=dt)
         X[i+1] = sol.y[:, -1]
@@ -49,13 +49,13 @@ def simulate_dragon_lqr(t_span=(0,10), dt=0.01, x0=None,
     return t_eval, X, U
 
 
-def simulate_dragon_morphology(controller='lqr', t_span=(0,15), dt=0.01,
+def simulate_aerial_robot_morphology(controller='lqr', t_span=(0,15), dt=0.01,
                                 x0=None, change_time=5.0,
                                 m_before=[1,1,1], l_before=[1,1,1],
                                 m_after=[2,0.5,1.5], l_after=[1.3,0.7,1.2]):
     """Simulate aerial model with mid-flight morphology change."""
-    drag_before = DragonAerialModel(m=m_before, l=l_before)
-    drag_after  = DragonAerialModel(m=m_after,  l=l_after)
+    drag_before = Aerial_robotAerialModel(m=m_before, l=l_before)
+    drag_after  = Aerial_robotAerialModel(m=m_after,  l=l_after)
     A_before, B_before = drag_before.linearize()
     A_after,  B_after  = drag_after.linearize()
 
@@ -93,15 +93,15 @@ def simulate_dragon_morphology(controller='lqr', t_span=(0,15), dt=0.01,
 
             morphology_changed = True
 
-        current_dragon = drag_after if morphology_changed else drag_before
-        u_hover        = current_dragon.hover_control()
+        current_aerial_robot = drag_after if morphology_changed else drag_before
+        u_hover        = current_aerial_robot.hover_control()
 
         delta_u = ctrl.compute_torque(X[i])
         u_total = u_hover + delta_u
         U[i]    = delta_u
 
         sol = solve_ivp(
-            fun=lambda t, x: current_dragon.derivatives(t, x, u_total),
+            fun=lambda t, x: current_aerial_robot.derivatives(t, x, u_total),
             t_span=(t_eval[i], t_eval[i+1]),
             y0=X[i], method='RK45', max_step=dt)
         X[i+1] = sol.y[:, -1]
@@ -149,17 +149,17 @@ def compute_aerial_metrics(t, X, U, change_time=None, threshold=0.05):
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("  DRAGON Aerial Model — LQR vs MPC Comparison")
+    print("  AERIAL_ROBOT Aerial Model — LQR vs MPC Comparison")
     print("=" * 60)
 
     print("\n[1/3] Basic LQR hover stabilization...")
-    t, X, U = simulate_dragon_lqr()
+    t, X, U = simulate_aerial_robot_lqr()
 
     print("\n[2/3] LQR under aerial morphology change...")
-    t_lqr, X_lqr, U_lqr = simulate_dragon_morphology(controller='lqr')
+    t_lqr, X_lqr, U_lqr = simulate_aerial_robot_morphology(controller='lqr')
 
     print("\n[3/3] MPC under aerial morphology change...")
-    t_mpc, X_mpc, U_mpc = simulate_dragon_morphology(controller='mpc')
+    t_mpc, X_mpc, U_mpc = simulate_aerial_robot_morphology(controller='mpc')
 
     m_lqr = compute_aerial_metrics(t_lqr, X_lqr, U_lqr, change_time=5.0)
     m_mpc = compute_aerial_metrics(t_mpc, X_mpc, U_mpc, change_time=5.0)
