@@ -206,14 +206,3 @@ python src/rl_controller.py
 3. Schulman, J., et al. "Proximal Policy Optimization Algorithms." arXiv:1707.06347, 2017.
 4. Anderson, B.D.O., Moore, J.B. "Optimal Control: Linear Quadratic Methods." Prentice Hall, 1990.
 
----
-
-## Author
-
-Masters Student — Control Systems / Robotics  
-*Thesis: Adaptive Motion Planning for Multilink Underactuated Systems Under Morphological Constraints*
-
----
-
-*This simulation study forms the preliminary work for a proposed research collaboration exploring non-approximated multibody dynamics control for articulated aerial systems.*
-#
